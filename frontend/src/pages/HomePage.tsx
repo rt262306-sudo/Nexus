@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePlayer } from '../context/PlayerContext';
 import { searchMusic, type SearchResult } from '../lib/api';
-import { Play, TrendingUp, Music2, Loader2, ChevronLeft } from 'lucide-react';
+import { Play, TrendingUp, Music2, ChevronLeft } from 'lucide-react';
 
 const GENRES = [
   { name: 'Pop',        query: 'top pop hits 2024',        color: 'linear-gradient(135deg,#f82c5a,#ff8c42)' },
@@ -10,13 +10,6 @@ const GENRES = [
   { name: 'Electronic',query: 'edm electronic hits',        color: 'linear-gradient(135deg,#06b6d4,#7c3aed)' },
   { name: 'Rock',      query: 'classic rock hits',          color: 'linear-gradient(135deg,#374151,#f82c5a)' },
   { name: 'Lo-Fi',     query: 'lofi hip hop chill beats',   color: 'linear-gradient(135deg,#065f46,#06b6d4)' },
-];
-
-const TRENDING_QUERIES = [
-  'Blinding Lights The Weeknd',
-  'Levitating Dua Lipa',
-  'Stay Kid LAROI Justin Bieber',
-  'As It Was Harry Styles',
 ];
 
 const getGreeting = () => {

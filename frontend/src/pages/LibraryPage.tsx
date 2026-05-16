@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Heart, Music2, Plus, Play, Trash2, Search as SearchIcon, Loader2, X } from 'lucide-react';
-import { usePlayer, type Playlist } from '../context/PlayerContext';
+import { usePlayer } from '../context/PlayerContext';
 import { searchMusic, type SearchResult } from '../lib/api';
 
 const LibraryPage: React.FC = () => {
-  const { playTrack, currentTrack, playlists, createPlaylist, deletePlaylist, removeFromPlaylist, addToPlaylist } = usePlayer();
+  const { playTrack, currentTrack, playlists, deletePlaylist, removeFromPlaylist, addToPlaylist } = usePlayer();
   const [liked, setLiked] = useState<SearchResult[]>([]);
   const [activeTab, setActiveTab] = useState<'liked' | 'playlists'>('liked');
-  const [isCreating, setIsCreating] = useState(false);
-  const [name, setName] = useState('');
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
   const selectedPlaylist = playlists.find(p => p.id === selectedPlaylistId) || null;
   const [isSearchingToAdd, setIsSearchingToAdd] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearchingResults, setIsSearchingResults] = useState(false);
-  const [menuSong, setMenuSong] = useState<SearchResult | null>(null);
-  const [showPlaylistSelector, setShowPlaylistSelector] = useState(false);
 
   // Debounce search in Library
   useEffect(() => {
@@ -142,7 +138,7 @@ const LibraryPage: React.FC = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {liked.map((song, i) => (
+              {liked.map((song) => (
                 <div
                   key={song.id}
                   style={{
@@ -353,9 +349,6 @@ const LibraryPage: React.FC = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFromPlaylist(selectedPlaylist.id, track.id);
-                        // Refresh selected playlist from master list
-                        const updated = playlists.find(p => p.id === selectedPlaylist.id);
-                        if (updated) setSelectedPlaylist({ ...updated, tracks: updated.tracks.filter(t => t.id !== track.id) });
                       }}
                       style={{ padding: 8, color: 'var(--text-secondary)' }}
                     >
@@ -371,31 +364,6 @@ const LibraryPage: React.FC = () => {
           ) : (
             /* --- PLAYLIST LIST VIEW --- */
             <>
-              {/* Create UI Button */}
-              <button
-                onClick={() => setIsCreating(true)}
-                style={{
-                  width: '100%',
-                  padding: '16px',
-                  borderRadius: 16,
-                  background: 'var(--bg-elevated)',
-                  border: '1px dashed var(--glass-border)',
-                  color: 'var(--text-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 12,
-                  marginBottom: 24,
-                  fontSize: 15,
-                  fontWeight: 600
-                }}
-              >
-                <Plus size={20} color="var(--accent-primary)" />
-                <span>Create New Playlist</span>
-              </button>
-
-              {/* Modal logic remains same... */}
-
               {/* Playlist List */}
               {playlists.length === 0 ? (
                 <div style={{ textAlign: 'center', paddingTop: 40 }}>

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search as SearchIcon, History, X, Heart, Music2, Play, MoreVertical } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search as SearchIcon, History, X, MoreVertical } from 'lucide-react';
 import { searchMusic, getSuggestions, type SearchResult } from '../lib/api';
-import { usePlayer, type Track } from '../context/PlayerContext';
+import { usePlayer } from '../context/PlayerContext';
 
 const CATEGORIES = [
   { name: 'Bollywood', color: '#f82c5a', emoji: '🎬' },
@@ -19,9 +19,8 @@ const SearchPage: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const { playTrack, currentTrack, toggleLike, liked, setMenuSong } = usePlayer();
+  const { playTrack, currentTrack } = usePlayer();
 
   useEffect(() => {
     const saved = localStorage.getItem('recent_searches');
@@ -61,7 +60,6 @@ const SearchPage: React.FC = () => {
     const finalQuery = searchTerm || query;
     if (!finalQuery.trim()) return;
     
-    setIsSearching(true);
     // Don't close focus immediately on auto-search unless it's an explicit search (like Enter or Suggestion)
     // But for "Search as you type", we keep focus but update results
     try {
@@ -74,8 +72,6 @@ const SearchPage: React.FC = () => {
       addToHistory(finalQuery);
     } catch (err) {
       console.error('Search failed', err);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -188,7 +184,7 @@ const SearchPage: React.FC = () => {
                     <div style={{ fontSize: 14, fontWeight: 600, color: currentTrack?.id === result.id ? 'var(--accent-primary)' : 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{result.title}</div>
                     <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{result.uploaderName}</div>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); setMenuSong(result); }} style={{ padding: 8, color: 'var(--text-secondary)' }}>
+                  <button onClick={(e) => e.stopPropagation()} style={{ padding: 8, color: 'var(--text-secondary)' }}>
                     <MoreVertical size={20} />
                   </button>
                 </div>

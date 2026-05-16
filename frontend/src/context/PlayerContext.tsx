@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode, useRef, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
+import type { ReactNode } from 'react';
 import { searchMusic, type SearchResult } from '../lib/api';
 
-interface Track {
+export interface Track {
   id: string;
   title: string;
   artist: string;
@@ -65,7 +66,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   // 1. States & Refs
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [queue, setQueue] = useState<Track[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -119,7 +119,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const addToPlaylist = useCallback((playlistId: string, track: Track | SearchResult) => {
     const trackToSave: Track = {
-      id: 'id' in track ? track.id : track.videoId,
+      id: track.id,
       title: track.title,
       artist: 'artist' in track ? track.artist : track.uploaderName,
       thumbnail: track.thumbnail,
@@ -206,11 +206,11 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   // 2. Queue & Playlist Actions
   const addToQueueNext = useCallback((result: SearchResult) => {
     const track: Track = {
-      id: result.id || result.videoId,
+      id: result.id,
       title: result.title,
       artist: result.uploaderName,
       thumbnail: result.thumbnail,
-      videoId: result.videoId || result.id
+      videoId: result.id
     };
     
     if (currentIndexRef.current === -1) {
@@ -225,11 +225,11 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const addToQueueEnd = useCallback((result: SearchResult) => {
     const track: Track = {
-      id: result.id || result.videoId,
+      id: result.id,
       title: result.title,
       artist: result.uploaderName,
       thumbnail: result.thumbnail,
-      videoId: result.videoId || result.id
+      videoId: result.id
     };
     
     if (currentIndexRef.current === -1) {
@@ -242,7 +242,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const toggleLike = useCallback((track: Track | SearchResult) => {
     try {
       const stored: any[] = JSON.parse(localStorage.getItem('liked_songs') || '[]');
-      const trackId = 'id' in track ? (track.id || track.videoId) : (track.videoId || track.id);
+    const trackId = track.id;
       const isLiked = stored.some(s => (s.id || s.videoId) === trackId);
       
       let updated: any[];
@@ -295,7 +295,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setQueue(newQueue);
-    setCurrentIndex(newIndex);
     queueRef.current = newQueue;
     currentIndexRef.current = newIndex;
     setIsTransitioning(true);

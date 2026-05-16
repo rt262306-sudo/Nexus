@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import { Home, Search as SearchIcon, Library as LibraryIcon, Heart as HeartIcon, Info, Play, Pause, SkipForward, Loader2, ChevronDown, Video, Music, Clock, Volume2, Menu, Plus, List } from 'lucide-react';
+import { Home, Search as SearchIcon, Library as LibraryIcon, Heart as HeartIcon, Play, Pause, SkipForward, Loader2, ChevronDown, Video, Music, Clock, Volume2, Menu, Plus, List } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import './App.css';
 import './index.css';
@@ -14,7 +14,7 @@ function App() {
   const {
     currentTrack, isPlaying, isLoading,
     togglePlayPause, progress, duration,
-    seek, showVideo, setShowVideo,
+    seek, setShowVideo,
     playNext, playPrevious, sleepTimer, setSleepTimer, isTransitioning,
     likedSongs, toggleLike, volume, setVolume,
     playlists, createPlaylist, addToPlaylist
@@ -65,7 +65,6 @@ function App() {
 
   const progressPercent = duration ? (progress / duration) * 100 : 0;
 
-  // Sync showVideo with expanded state and mode
   useEffect(() => {
     setShowVideo(isPlayerExpanded && isVideoMode && !!currentTrack);
   }, [isPlayerExpanded, isVideoMode, currentTrack, setShowVideo]);
@@ -83,7 +82,6 @@ function App() {
     <Router>
       <div className={`app-container${isPlayerExpanded ? ' player-open' : ''}`}>
 
-        {/* ── Main scrollable content ── */}
         <main className="main-content">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -93,13 +91,11 @@ function App() {
           </Routes>
         </main>
 
-        {/* ── Mini Player Bar ── */}
         <div
           className="player-bar glass-panel fade-in"
           style={{ opacity: currentTrack ? 1 : 0.55, cursor: currentTrack ? 'pointer' : 'default' }}
           onClick={openPlayer}
         >
-          {/* Thin progress indicator at top */}
           {currentTrack && duration > 0 && (
             <div className="player-progress-thin" style={{ width: `${progressPercent}%` }} />
           )}
@@ -125,19 +121,14 @@ function App() {
           </div>
         </div>
 
-        {/* ── Full-Screen Player Overlay ── */}
-        {/* The YouTube iframe sits at z-index 550 filling the screen when showVideo=true.
-            This overlay (z-index 600) layers controls + UI on top of that video. */}
         <div
           className={`full-player-overlay${isPlayerExpanded ? ' expanded' : ''}${isVideoMode && !isTransitioning ? ' video-active' : ''}${isTransitioning ? ' transitioning' : ''}`}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {/* Grab Handle */}
           <div className="grab-handle" />
 
-          {/* Gradient scrim over the video so text is readable */}
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.85) 100%)',
@@ -145,13 +136,11 @@ function App() {
             zIndex: 0,
           }} />
 
-          {/* Header */}
           <div className="full-player-header" style={{ position: 'relative', zIndex: 1 }}>
             <button className="icon-btn" onClick={closePlayer}>
               <ChevronDown size={28} />
             </button>
             
-            {/* Mode Toggle */}
             <div className="mode-toggle">
               <button 
                 className={!isVideoMode ? 'active' : ''} 
@@ -180,7 +169,6 @@ function App() {
             </button>
           </div>
 
-          {/* --- BOTTOM SHEET SETTINGS --- */}
           {isMenuOpen && (
             <div className="bottom-sheet-overlay" onClick={() => setIsMenuOpen(false)}>
               <div className="bottom-sheet" onClick={(e) => e.stopPropagation()}>
@@ -194,7 +182,6 @@ function App() {
                   
                   {!showPlaylistSelector ? (
                     <>
-                      {/* Pro Volume Slider */}
                       <div className="pro-slider-container">
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -230,7 +217,6 @@ function App() {
 
                       <div style={{ height: 1, background: 'rgba(255,255,255,0.05)' }} />
 
-                      {/* Sleep Timer */}
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                           <Clock size={18} color="var(--text-secondary)" />
@@ -260,7 +246,6 @@ function App() {
 
                       <div style={{ height: 1, background: 'rgba(255,255,255,0.05)' }} />
 
-                      {/* Playlist Actions */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                         <button 
                           onClick={() => setIsCreatingPlaylist(true)}
@@ -284,7 +269,6 @@ function App() {
                         </button>
                       </div>
 
-                      {/* --- Spotify-style Modal Overlay --- */}
                       {isCreatingPlaylist && (
                         <div style={{ 
                           position: 'fixed', inset: 0, zIndex: 3000,
@@ -328,7 +312,6 @@ function App() {
                                   onClick={() => {
                                     if (newPlaylistName.trim()) {
                                       const playlistId = createPlaylist(newPlaylistName.trim());
-                                      // AUTO-ADD current song if it exists
                                       if (currentTrack) {
                                         addToPlaylist(playlistId, currentTrack);
                                         showToast(`Added to ${newPlaylistName.trim()}`);
@@ -351,7 +334,6 @@ function App() {
                         </div>
                       )}
 
-                      {/* --- Toast Notification --- */}
                       {toast.show && (
                         <div style={{
                           position: 'fixed', bottom: 100, left: '50%', transform: 'translateX(-50%)',
@@ -365,7 +347,6 @@ function App() {
                     </>
                   ) : (
                     <>
-                      {/* Playlist Selector List */}
                       <div style={{ maxHeight: 300, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {playlists.length === 0 ? (
                           <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '20px 0' }}>No playlists yet.</p>
@@ -408,7 +389,6 @@ function App() {
             </div>
           )}
 
-          {/* Album Art Fallback (when video is off) */}
           {!isVideoMode && (
             <div className="full-album-art-container">
               <img 
@@ -422,10 +402,8 @@ function App() {
             </div>
           )}
 
-          {/* Spacer — pushes info/controls to the bottom */}
           {isVideoMode && <div style={{ flex: 1 }} />}
 
-          {/* Track info */}
           <div className="full-player-info" style={{ 
             position: 'relative', 
             zIndex: 1,
@@ -448,7 +426,6 @@ function App() {
             )}
           </div>
 
-          {/* Progress bar */}
           <div className="full-player-progress" style={{ position: 'relative', zIndex: 1 }}>
             <div
               className="progress-bar-bg"
@@ -465,7 +442,6 @@ function App() {
             </div>
           </div>
 
-          {/* Controls */}
           <div className="full-player-main-controls" style={{ position: 'relative', zIndex: 1, paddingBottom: 40 }}>
             <button className="skip-btn" style={{ transform: 'scaleX(-1)' }} onClick={playPrevious} disabled={!currentTrack}>
               <SkipForward size={28} fill="currentColor" />
@@ -481,22 +457,21 @@ function App() {
           </div>
         </div>
 
-        {/* ── Bottom Navigation ── */}
         <nav className="bottom-nav glass-panel">
-          <NavLink to="/" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/" className={({ isActive }: { isActive: boolean }) => isActive ? 'nav-item active' : 'nav-item'}>
             <Home size={22} /><span>Home</span>
           </NavLink>
           <NavLink 
             to="/search" 
             onClick={() => setSearchResetKey(prev => prev + 1)}
-            className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
+            className={({ isActive }: { isActive: boolean }) => isActive ? 'nav-item active' : 'nav-item'}
           >
             <SearchIcon size={22} /><span>Search</span>
           </NavLink>
-          <NavLink to="/library" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/library" className={({ isActive }: { isActive: boolean }) => isActive ? 'nav-item active' : 'nav-item'}>
             <LibraryIcon size={22} /><span>Library</span>
           </NavLink>
-          <NavLink to="/about" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/about" className={({ isActive }: { isActive: boolean }) => isActive ? 'nav-item active' : 'nav-item'}>
             <HeartIcon size={22} /><span>About</span>
           </NavLink>
         </nav>

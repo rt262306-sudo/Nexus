@@ -54,7 +54,7 @@ export const getSuggestions = async (query: string): Promise<string[]> => {
   }
 };
 
-export const getStreamData = async (videoId: string): Promise<any> => {
+export const getStreamData = async (_videoId: string): Promise<any> => {
   return null; 
 };
 
